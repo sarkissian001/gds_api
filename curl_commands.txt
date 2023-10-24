@@ -1,0 +1,7 @@
+build --platform linux/amd64  -t gds_api .
+
+docker run -d --name gds_api_container gds_api_service
+
+docker run -p 8080:8080 gds_api
+
+curl "http://localhost:8080/v1/party-lookup?party_id=104"

@@ -1,0 +1,45 @@
+version: '2'
+services:
+  zookeeper:
+    image: confluentinc/cp-zookeeper:latest
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    networks:
+      - gds_network
+
+  kafka:
+    image: confluentinc/cp-kafka:latest
+    depends_on:
+      - zookeeper
+    ports:
+      - 9092:9092
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      # KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:29092,PLAINTEXT_HOST://localhost:9092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    networks:
+      - gds_network
+
+  # gds_api_service:
+  #   image: gds_api:latest
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile
+  #   ports:
+  #     - 8080:8080
+  #   environment:
+  #     - spring.kafka.consumer.bootstrap-servers=kafka:9092
+  #     - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+  #     - spring.kafka.consumer.group-id=party-lookup-group
+  #     - KAFKA_APPLICATION_ID=gds-api-service
+  #     - GDS_PARTY_TOPIC_NAME=GDS_PARTY_TOPIC
+  #   networks:
+  #     - gds_network
+
+networks:
+  gds_network:
