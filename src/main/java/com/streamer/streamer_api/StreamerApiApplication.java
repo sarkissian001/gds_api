@@ -1,12 +1,12 @@
-package com.gds.gds_api;
+package com.streamer.streamer_api;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class GdsApiApplication {
+public class StreamerApiApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(GdsApiApplication.class, args);
+        SpringApplication.run(StreamerApiApplication.class, args);
     }
 }

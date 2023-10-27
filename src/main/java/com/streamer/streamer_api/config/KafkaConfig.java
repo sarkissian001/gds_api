@@ -1,4 +1,4 @@
-package com.gds.gds_api.config;
+package com.streamer.streamer_api.config;
 
 import org.apache.kafka.common.serialization.Serde;
 import org.apache.kafka.common.serialization.Serdes;
@@ -19,22 +19,22 @@ import java.util.Properties;
 @Configuration
 public class KafkaConfig {
 
-    @Value("${gds.party.topic.name}") 
-    private String partyTopic;
+    @Value("${streamer.id.topic.name}") 
+    private String idTopic;
 
-    @Value("${KAFKA_BOOTSTRAP_SERVERS}")
+    @Value("${kafka.bootstrap.servers}")
     private String bootstrapServers;
 
     @Value("${kafka.application.id}")
     private String kafkaApplicationId; 
 
-    private String storeName = partyTopic + "-store";
+    private String storeName = idTopic + "-store";
     
     // Validate env vars 
    @PostConstruct
     public void validate() {
-        if (partyTopic == null || partyTopic.isEmpty()) {
-            throw new IllegalArgumentException("GDS_PARTY_TOPIC_NAME is not set or is empty");
+        if (idTopic == null || idTopic.isEmpty()) {
+            throw new IllegalArgumentException("STREAMER_ID_TOPIC_NAME is not set or is empty");
         }
         if (bootstrapServers == null || bootstrapServers.isEmpty()) {
             throw new IllegalArgumentException("KAFKA_BOOTSTRAP_SERVERS is not set or is empty");
@@ -57,15 +57,15 @@ public class KafkaConfig {
         StreamsBuilder builder = new StreamsBuilder();
 
         // Can add other Topologies here
-        PartyIdTopology(builder);
+        IdIdTopology(builder);
 
         return builder;
     }
 
-    private void PartyIdTopology(StreamsBuilder builder) {
+    private void IdIdTopology(StreamsBuilder builder) {
         final Serde<String> stringSerde = getStringSerde();
 
-        KStream<String, String> myDataStream = builder.stream(partyTopic, Consumed.with(stringSerde, stringSerde));
+        KStream<String, String> myDataStream = builder.stream(idTopic, Consumed.with(stringSerde, stringSerde));
         myDataStream.groupByKey()
             .count(Materialized.as(storeName));
     }

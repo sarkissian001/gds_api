@@ -1,6 +1,6 @@
-package com.gds.gds_api.controller;
+package com.streamer.streamer_api.controller;
 
-import com.gds.gds_api.service.KafkaStreamsService;
+import com.streamer.streamer_api.service.KafkaStreamsService;
 
 import java.util.Collections;
 import java.util.Map;
@@ -16,18 +16,18 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/v1")
-public class PartyLookupController {
+public class IdLookupController {
 
     private final KafkaStreamsService kafkaStreamsService;
 
     @Autowired
-    public PartyLookupController(KafkaStreamsService kafkaStreamsService) {
+    public IdLookupController(KafkaStreamsService kafkaStreamsService) {
         this.kafkaStreamsService = kafkaStreamsService;
     }
 
-    @GetMapping("/party-lookup")
-    public ResponseEntity<Map<String, Boolean>> checkPartyId(@RequestParam String party_id) {
-        boolean exists = kafkaStreamsService.doesPartyIdExist(party_id);
+    @GetMapping("/id-lookup")
+    public ResponseEntity<Map<String, Boolean>> checkRecordId(@RequestParam String record_id) {
+        boolean exists = kafkaStreamsService.doesRecordIdExist(record_id);
         return ResponseEntity.ok(Collections.singletonMap("exists", exists));
     }
 }

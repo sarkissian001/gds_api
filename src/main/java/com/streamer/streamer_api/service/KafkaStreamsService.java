@@ -1,4 +1,4 @@
-package com.gds.gds_api.service;
+package com.streamer.streamer_api.service;
 
 import org.apache.kafka.streams.KafkaStreams;
 import org.apache.kafka.streams.StoreQueryParameters;
@@ -10,10 +10,10 @@ import org.springframework.stereotype.Service;
 @Service
 public class KafkaStreamsService {
 
-    @Value("${gds.party.topic.name}") 
-    private String partyTopic;
+    @Value("${streamer.id.topic.name}") 
+    private String idTopic;
 
-    private String storeName = partyTopic + "-store";
+    private String storeName = idTopic + "-store";
 
     private final KafkaStreams kafkaStreams;
 
@@ -21,7 +21,7 @@ public class KafkaStreamsService {
         this.kafkaStreams = kafkaStreams;
     }
 
-    public boolean doesPartyIdExist(String partyId) {
+    public boolean doesRecordIdExist(String record_id) {
      KafkaStreams.State state = kafkaStreams.state();
  
      if (state == KafkaStreams.State.RUNNING || state == KafkaStreams.State.REBALANCING) {
@@ -29,7 +29,7 @@ public class KafkaStreamsService {
              ReadOnlyKeyValueStore<String, String> keyValueStore = kafkaStreams.store(StoreQueryParameters.fromNameAndType(
                  storeName, QueryableStoreTypes.keyValueStore()));
              
-             return keyValueStore.get(partyId) != null;
+             return keyValueStore.get(record_id) != null;
          } catch (Exception e) {
              // Log the exception or handle it accordingly
              throw new RuntimeException("Error querying state store: ", e);

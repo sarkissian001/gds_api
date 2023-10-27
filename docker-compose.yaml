@@ -1,45 +1,50 @@
-version: '2'
+version: '3.9'
 services:
   zookeeper:
-    image: confluentinc/cp-zookeeper:latest
+    image: confluentinc/cp-zookeeper:7.5.1
     environment:
-      ZOOKEEPER_CLIENT_PORT: 2181
-      ZOOKEEPER_TICK_TIME: 2000
+      - ZOOKEEPER_CLIENT_PORT=2181
+      - ZOOKEEPER_TICK_TIME=2000
+      - ALLOW_ANONYMOUS_LOGIN=yes
     networks:
-      - gds_network
-
+      - streamer_network
   kafka:
-    image: confluentinc/cp-kafka:latest
+    image: confluentinc/cp-kafka:7.5.1
     depends_on:
       - zookeeper
     ports:
       - 9092:9092
+      - 29092:29092
     environment:
-      KAFKA_BROKER_ID: 1
-      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      # KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:29092,PLAINTEXT_HOST://localhost:9092
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
-      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
-      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-    networks:
-      - gds_network
+      - KAFKA_BROKER_ID=1
+      - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
+      - ALLOW_PLAINTEXT_LISTENER=yes
+      - KAFKA_LISTENERS=EXTERNAL_SAME_HOST://:29092,INTERNAL://:9092
+      - KAFKA_ADVERTISED_LISTENERS=INTERNAL://kafka:9092,EXTERNAL_SAME_HOST://localhost:29092
+      - KAFKA_LISTENER_SECURITY_PROTOCOL_MAP=INTERNAL:PLAINTEXT,EXTERNAL_SAME_HOST:PLAINTEXT
+      - KAFKA_INTER_BROKER_LISTENER_NAME=INTERNAL
+      - KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1
 
-  # gds_api_service:
-  #   image: gds_api:latest
-  #   build:
-  #     context: .
-  #     dockerfile: Dockerfile
-  #   ports:
-  #     - 8080:8080
-  #   environment:
-  #     - spring.kafka.consumer.bootstrap-servers=kafka:9092
-  #     - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
-  #     - spring.kafka.consumer.group-id=party-lookup-group
-  #     - KAFKA_APPLICATION_ID=gds-api-service
-  #     - GDS_PARTY_TOPIC_NAME=GDS_PARTY_TOPIC
-  #   networks:
-  #     - gds_network
+    networks:
+      - streamer_network
+
+  streamer_api_service:
+    image: streamer_api:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      - kafka
+    ports:
+      - 8080:8080
+    environment:
+      - SPRING_KAFKA_BOOTSTRAP-SERVERS=kafka:9092
+      - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+      - SPRING_KAFKA_CONSUMER_GROUP-ID=id-lookup-group
+      - KAFKA_APPLICATION_ID=streamer-api-service
+      - STREAMER_ID_TOPIC_NAME=STREAMER_ID_TOPIC
+    networks:
+      - streamer_network
 
 networks:
-  gds_network:
+  streamer_network:
