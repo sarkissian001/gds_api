@@ -4,6 +4,4 @@ docker run -d --name streamer_api_container streamer_api_service
 
 docker run -p 8080:8080 streamer_api
 
-curl "http://localhost:8080/v1/id-lookup?id_id=104"
-
-curl "http://localhost:8080/v1/id-lookup?id-id=100"
+curl "http://localhost:8080/v1/id-lookup?record-id=100"
