@@ -43,7 +43,7 @@ The Streamer API offers a way to interact with Kafka streams. It allows users to
 
 1. Clone the repository:
     ```bash
-    git clone https://github.com/yourusername/streamer-api.git
+    git clone [https://github.com/yourusername/streamer-api.git](https://github.com/sarkissian001/streamer_api.git)
     ```
 
 2. Navigate to the project directory:
