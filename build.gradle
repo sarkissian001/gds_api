@@ -26,7 +26,7 @@ dependencies {
 }
 
 test {
-    enabled = false
+    enabled = true
 }
 
 tasks.named('test') {
